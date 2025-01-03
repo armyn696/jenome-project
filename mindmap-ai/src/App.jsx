@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import MindMap from './components/MindMap';
 import ModernHeader from './components/ModernHeader';
 import './App.css';
@@ -11,166 +10,25 @@ function App() {
   const [error, setError] = useState('');
   const [isInputExpanded, setIsInputExpanded] = useState(false);
 
-  const calculateNodePositions = (nodes, edges) => {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
-    
-    // Set position for center node
-    nodes[0].position = { x: centerX, y: centerY };
-    
-    // Group nodes by their distance from center node
-    const nodesByLevel = {};
-    const visited = new Set(['1']); // Start with center node
-    
-    const getNodeLevel = (nodeId, level = 0) => {
-      const connectedEdges = edges.filter(e => e.source === nodeId);
-      connectedEdges.forEach(edge => {
-        if (!visited.has(edge.target)) {
-          visited.add(edge.target);
-          nodesByLevel[level] = nodesByLevel[level] || [];
-          nodesByLevel[level].push(edge.target);
-          getNodeLevel(edge.target, level + 1);
-        }
-      });
-    };
-    
-    getNodeLevel('1');
-    
-    // Position nodes in each level in a circle
-    Object.entries(nodesByLevel).forEach(([level, nodeIds]) => {
-      const levelRadius = radius * (Number(level) + 1) / 3;
-      const angleStep = (2 * Math.PI) / nodeIds.length;
-      
-      nodeIds.forEach((nodeId, index) => {
-        const angle = index * angleStep;
-        const node = nodes.find(n => n.id === nodeId);
-        if (node) {
-          node.position = {
-            x: centerX + levelRadius * Math.cos(angle),
-            y: centerY + levelRadius * Math.sin(angle)
-          };
-        }
-      });
-    });
-    
-    // Ensure all nodes have positions (fallback for any disconnected nodes)
-    nodes.forEach(node => {
-      if (!node.position) {
-        node.position = {
-          x: centerX + (Math.random() - 0.5) * radius,
-          y: centerY + (Math.random() - 0.5) * radius
-        };
-      }
-    });
-    
-    return nodes;
-  };
-
-  const cleanAndParseJSON = (text) => {
-    console.log('Raw AI Response:', text);
-
-    const jsonStart = text.indexOf('{');
-    if (jsonStart === -1) {
-      console.error('No JSON object found in response');
-      throw new Error('Invalid response format');
-    }
-    
-    const jsonEnd = text.lastIndexOf('}');
-    if (jsonEnd === -1) {
-      console.error('Incomplete JSON in response');
-      throw new Error('Invalid response format');
-    }
-    
-    const jsonStr = text.substring(jsonStart, jsonEnd + 1);
-    console.log('Extracted JSON:', jsonStr);
-
-    try {
-      const parsed = JSON.parse(jsonStr);
-      console.log('Parsed JSON:', parsed);
-      
-      if (!Array.isArray(parsed.nodes) || !parsed.nodes.length) {
-        throw new Error('Invalid mindmap structure: missing or empty nodes array');
-      }
-
-      if (!Array.isArray(parsed.edges)) {
-        parsed.edges = [];
-      }
-
-      if (parsed.edges.length === 0) {
-        const newEdges = [];
-        parsed.nodes.forEach((node, index) => {
-          if (index > 0) {
-            newEdges.push({
-              id: `e1-${node.id}`,
-              source: "1",
-              target: node.id
-            });
-          }
-        });
-        parsed.edges = newEdges;
-      }
-
-      // Calculate positions for all nodes
-      parsed.nodes = calculateNodePositions(parsed.nodes, parsed.edges);
-
-      return parsed;
-    } catch (e) {
-      console.error('JSON parse error:', e);
-      throw new Error('Failed to parse mindmap structure');
-    }
-  };
-
-  const generateMindMap = async (text) => {
-    const prompt = `Generate a mindmap structure for the following text. Return ONLY a JSON object in this exact format:
-{
-  "nodes": [
-    {"id": "1", "label": "Main Topic", "type": "input"},
-    {"id": "2", "label": "Subtopic 1", "type": "default"},
-    ...
-  ],
-  "edges": [
-    {"id": "e1-2", "source": "1", "target": "2"},
-    ...
-  ]
-}
-Do not include any other text, markdown formatting, or explanations. The response should be a valid JSON object only.
-Text: ${text}`;
-
-    const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash-exp",
-      generationConfig: {
-        temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 2048,
-      }
-    });
-
-    try {
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const responseText = response.text();
-      
-      return cleanAndParseJSON(responseText);
-    } catch (error) {
-      console.error('AI generation error:', error);
-      throw new Error('Failed to generate mindmap');
-    }
-  };
-
   const handleGenerate = async () => {
-    if (!inputText.trim()) {
-      setError('لطفاً متنی وارد کنید');
-      return;
-    }
-
     try {
-      setError('');
-      const data = await generateMindMap(inputText);
+      const response = await fetch('http://169.254.107.67:5000/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: inputText }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Network response was not ok');
+      }
+      
       setNodes(data.nodes);
       setEdges(data.edges);
+      setError('');
       setIsInputExpanded(false);
     } catch (error) {
       console.error('Error:', error);
@@ -193,17 +51,10 @@ Text: ${text}`;
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="متن خود را وارد کنید..."
-              className="input-text"
+              placeholder="متن خود را اینجا وارد کنید..."
             />
-            <button 
-              onClick={handleGenerate} 
-              className="generate-button"
-              disabled={!inputText.trim()}
-            >
-              ایجاد نقشه ذهنی
-            </button>
-            {error && <div className="error-message">{error}</div>}
+            <button onClick={handleGenerate}>تولید نمودار</button>
+            {error && <div className="error">{error}</div>}
           </div>
         </div>
         <MindMap nodes={nodes} edges={edges} />
