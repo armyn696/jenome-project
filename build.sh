@@ -59,11 +59,14 @@ npm run build
 # Create _redirects file
 echo "Creating _redirects file..."
 cat > public/_redirects << EOL
-/flashcard/* /flashcard/index.html 200!
-/mindmap/mindmap-ai/* /mindmap/mindmap-ai/index.html 200!
-/mindmap/mindmap-manual/* /mindmap/mindmap-manual/index.html 200!
-/pdf-chat/* /pdf-chat/index.html 200!
+/flashcard/* /flashcard/index.html 200
+/mindmap/mindmap-ai/* /mindmap/mindmap-ai/index.html 200
+/mindmap/mindmap-manual/* /mindmap/mindmap-manual/index.html 200
+/pdf-chat/* /pdf-chat/index.html 200
 /* /index.html 200
 EOL
+
+# Create .nojekyll file to prevent GitHub Pages from ignoring files that begin with an underscore
+touch public/.nojekyll
 
 echo "Build completed!"
