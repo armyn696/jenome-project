@@ -1,27 +1,27 @@
 [build]
-  command = "chmod +x build.sh && ./build.sh"
   publish = "studyhub-interactives/public"
+  command = "chmod +x build.sh && ./build.sh"
 
 [build.environment]
   NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/flashcard/*"
+  from = "/flashcard"
   to = "/flashcard/index.html"
   status = 200
 
 [[redirects]]
-  from = "/mindmap/mindmap-ai/*"
+  from = "/mindmap/mindmap-ai"
   to = "/mindmap/mindmap-ai/index.html"
   status = 200
 
 [[redirects]]
-  from = "/mindmap/mindmap-manual/*"
+  from = "/mindmap/mindmap-manual"
   to = "/mindmap/mindmap-manual/index.html"
   status = 200
 
 [[redirects]]
-  from = "/pdf-chat/*"
+  from = "/pdf-chat"
   to = "/pdf-chat/index.html"
   status = 200
 
