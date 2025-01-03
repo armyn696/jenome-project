@@ -295,14 +295,23 @@ def handler(event, context):
 # این بخش فقط برای اجرای محلی استفاده می‌شود
 if __name__ == '__main__':
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": "*",
+            "methods": ["POST", "OPTIONS"],
+            "allow_headers": ["Content-Type"]
+        }
+    })
     
     @app.route('/')
     def index():
         return render_template('index.html')
 
-    @app.route('/api/generate', methods=['POST'])
+    @app.route('/api/generate', methods=['POST', 'OPTIONS'])
     def generate():
+        if request.method == 'OPTIONS':
+            return '', 204
+        
         try:
             data = request.get_json()
             if not data or 'text' not in data:
