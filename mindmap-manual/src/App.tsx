@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename="/mindmap/mindmap-manual">
         <TooltipProvider>
           <Routes>
             <Route path="/" element={<Index />} />
