@@ -26,8 +26,13 @@ function App() {
         throw new Error(data.error || 'Network response was not ok');
       }
       
-      setNodes(data.flow_data.nodes);
-      setEdges(data.flow_data.edges);
+      if (data.flow_data) {
+        setNodes(data.flow_data.nodes || []);
+        setEdges(data.flow_data.edges || []);
+      } else {
+        throw new Error('Invalid response format');
+      }
+      
       setError('');
       setIsInputExpanded(false);
     } catch (error) {
