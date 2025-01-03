@@ -1,0 +1,1 @@
+<div className="flex items-center gap-2 p-2 bg-white shadow-sm sticky top-0 z-50"> 

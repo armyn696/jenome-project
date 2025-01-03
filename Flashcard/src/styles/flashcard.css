@@ -1,0 +1,268 @@
+.card {
+  overflow: visible;
+  width: 400px;
+  height: 200px;
+  cursor: pointer;
+  perspective: 1000px;
+  transition: transform 0.2s;
+}
+
+/* Special styling for study mode */
+.study-card-container .card {
+  width: 100%;
+  height: 500px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.study-card-container .front-content {
+  font-size: 1.75rem;
+  padding: 3rem;
+}
+
+.study-card-container .back-content {
+  font-size: 1.75rem;
+  padding: 3rem;
+}
+
+.study-card-container .front-content strong,
+.study-card-container .back-content strong {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.study-card-container .front-content p,
+.study-card-container .back-content p {
+  font-size: 1.75rem;
+  line-height: 1.6;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.content.flipped {
+  transform: rotateY(180deg);
+}
+
+.front, .back {
+  background-color: #151515;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.back {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.back-content {
+  position: absolute;
+  width: 99%;
+  height: 99%;
+  background-color: #151515;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.back-content > div {
+  width: 100%;
+}
+
+.front {
+  transform: rotateY(180deg);
+  color: white;
+}
+
+.front .front-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  scroll-padding: 1rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y proximity;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scroll-snap-type: y mandatory;
+  scroll-snap-stop: always;
+  scroll-snap-points-y: repeat(20px);
+  transition: scroll-position 0.5s;
+  scroll-timeline-name: --scroll;
+  scroll-timeline-axis: block;
+}
+
+.front-content * {
+  scroll-snap-align: start;
+}
+
+.front-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.front-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.front-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.front-content {
+  scroll-timeline: --scroll block;
+  animation: scroll-animation linear;
+  animation-timeline: --scroll;
+  animation-range: entry-crossing;
+}
+
+@keyframes scroll-animation {
+  0% { scroll-position: start; }
+  100% { scroll-position: end; }
+}
+
+/* Add smooth scrolling to the document */
+html {
+  scroll-behavior: smooth;
+}
+
+.description {
+  box-shadow: 0px 0px 10px 5px #00000088;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  background-color: #00000099;
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.description::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px 5px #00000088;
+  pointer-events: none;
+}
+
+.description::-webkit-scrollbar {
+  display: none;
+}
+
+.title {
+  font-size: 1rem;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title p {
+  width: 100%;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.front .img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #ffbb66;
+  position: relative;
+  filter: blur(15px);
+}
+
+#bottom {
+  background-color: #ff8866;
+  left: 50px;
+  top: 0px;
+  width: 150px;
+  height: 150px;
+}
+
+#right {
+  background-color: #ff2233;
+  left: 160px;
+  top: -80px;
+  width: 30px;
+  height: 30px;
+}
+
+/* Study Mode Title Styling */
+.study-mode-title {
+  text-align: center;
+  width: 100%;
+  margin: 2rem 0;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scroll-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -8px;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
