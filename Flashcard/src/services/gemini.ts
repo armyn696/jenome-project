@@ -13,7 +13,11 @@ export async function createFlashcardsFromText(
     difficulty: Difficulty = 'mixed'
 ): Promise<Flashcard[]> {
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+        if (!import.meta.env.VITE_GEMINI_API_KEY) {
+            throw new Error('VITE_GEMINI_API_KEY is not set');
+        }
+
+        const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.0-flash-exp",
