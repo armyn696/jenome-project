@@ -11,10 +11,65 @@ function App() {
   const [error, setError] = useState('');
   const [isInputExpanded, setIsInputExpanded] = useState(false);
 
-  const cleanAndParseJSON = (text) => {
-    console.log('Raw AI Response:', text); // Log raw response
+  const calculateNodePositions = (nodes, edges) => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
+    
+    // Set position for center node
+    nodes[0].position = { x: centerX, y: centerY };
+    
+    // Group nodes by their distance from center node
+    const nodesByLevel = {};
+    const visited = new Set(['1']); // Start with center node
+    
+    const getNodeLevel = (nodeId, level = 0) => {
+      const connectedEdges = edges.filter(e => e.source === nodeId);
+      connectedEdges.forEach(edge => {
+        if (!visited.has(edge.target)) {
+          visited.add(edge.target);
+          nodesByLevel[level] = nodesByLevel[level] || [];
+          nodesByLevel[level].push(edge.target);
+          getNodeLevel(edge.target, level + 1);
+        }
+      });
+    };
+    
+    getNodeLevel('1');
+    
+    // Position nodes in each level in a circle
+    Object.entries(nodesByLevel).forEach(([level, nodeIds]) => {
+      const levelRadius = radius * (Number(level) + 1) / 3;
+      const angleStep = (2 * Math.PI) / nodeIds.length;
+      
+      nodeIds.forEach((nodeId, index) => {
+        const angle = index * angleStep;
+        const node = nodes.find(n => n.id === nodeId);
+        if (node) {
+          node.position = {
+            x: centerX + levelRadius * Math.cos(angle),
+            y: centerY + levelRadius * Math.sin(angle)
+          };
+        }
+      });
+    });
+    
+    // Ensure all nodes have positions (fallback for any disconnected nodes)
+    nodes.forEach(node => {
+      if (!node.position) {
+        node.position = {
+          x: centerX + (Math.random() - 0.5) * radius,
+          y: centerY + (Math.random() - 0.5) * radius
+        };
+      }
+    });
+    
+    return nodes;
+  };
 
-    // Remove any text before the first {
+  const cleanAndParseJSON = (text) => {
+    console.log('Raw AI Response:', text);
+
     const jsonStart = text.indexOf('{');
     if (jsonStart === -1) {
       console.error('No JSON object found in response');
@@ -28,23 +83,20 @@ function App() {
     }
     
     const jsonStr = text.substring(jsonStart, jsonEnd + 1);
-    console.log('Extracted JSON:', jsonStr); // Log extracted JSON
+    console.log('Extracted JSON:', jsonStr);
 
     try {
       const parsed = JSON.parse(jsonStr);
-      console.log('Parsed JSON:', parsed); // Log parsed JSON
+      console.log('Parsed JSON:', parsed);
       
-      // Validate the structure
       if (!Array.isArray(parsed.nodes) || !parsed.nodes.length) {
         throw new Error('Invalid mindmap structure: missing or empty nodes array');
       }
 
-      // Ensure edges array exists
       if (!Array.isArray(parsed.edges)) {
         parsed.edges = [];
       }
 
-      // Generate missing edges if needed
       if (parsed.edges.length === 0) {
         const newEdges = [];
         parsed.nodes.forEach((node, index) => {
@@ -58,6 +110,9 @@ function App() {
         });
         parsed.edges = newEdges;
       }
+
+      // Calculate positions for all nodes
+      parsed.nodes = calculateNodePositions(parsed.nodes, parsed.edges);
 
       return parsed;
     } catch (e) {
