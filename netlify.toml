@@ -1,6 +1,6 @@
 [build]
   command = "chmod +x build.sh && ./build.sh"
-  publish = "public"
+  publish = "studyhub-interactives/public"
 
 [build.environment]
   NODE_VERSION = "18"
