@@ -233,6 +233,10 @@ def handler(event, context):
         if event['httpMethod'] != 'POST':
             return {
                 'statusCode': 405,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'body': json.dumps({'error': 'Method Not Allowed'})
             }
 
@@ -243,6 +247,10 @@ def handler(event, context):
         if not text:
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'body': json.dumps({'error': 'No text provided'})
             }
             
@@ -252,6 +260,10 @@ def handler(event, context):
         if not mermaid_code:
             return {
                 'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'body': json.dumps({'error': 'Failed to generate Mermaid code'})
             }
             
@@ -259,20 +271,26 @@ def handler(event, context):
         flow_data = mermaid_to_reactflow(mermaid_code)
         
         # برگرداندن پاسخ
+        response_data = {
+            'mermaid_code': mermaid_code,
+            'flow_data': flow_data
+        }
+        
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'  # CORS
+                'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({
-                'mermaid_code': mermaid_code,
-                'flow_data': flow_data
-            })
+            'body': json.dumps(response_data)
         }
 
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': json.dumps({'error': str(e)})
         } 
