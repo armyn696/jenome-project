@@ -15,6 +15,11 @@ cd ../studyhub-interactives
 npm install
 cd ..
 
+# Create public directory
+echo "Creating public directory..."
+rm -rf studyhub-interactives/public
+mkdir -p studyhub-interactives/public
+
 # Now build all projects
 echo "Building all projects..."
 
@@ -45,3 +50,14 @@ cp -r dist/* ../studyhub-interactives/public/pdf-chat/ || true
 # Build main project (studyhub-interactives)
 cd ../studyhub-interactives
 npm run build
+cp -r dist/* public/ || true
+
+# Create _redirects file
+echo "Creating _redirects file..."
+cat > public/_redirects << EOL
+/flashcard/*    /flashcard/index.html    200
+/mindmap/mindmap-ai/*    /mindmap/mindmap-ai/index.html    200
+/mindmap/mindmap-manual/*    /mindmap/mindmap-manual/index.html    200
+/pdf-chat/*    /pdf-chat/index.html    200
+/*    /index.html    200
+EOL

@@ -5,38 +5,36 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    title: "MindMap",
-    description: "Create and organize your study materials visually",
+    title: "MindMap AI",
+    description: "Create and organize your study materials visually with AI",
     icon: Brain,
-    href: "/mindmap",
+    href: "/mindmap/mindmap-ai",
     gradient: "from-purple-500 to-indigo-500",
+  },
+  {
+    title: "MindMap Manual",
+    description: "Create and organize your study materials visually manually",
+    icon: Brain,
+    href: "/mindmap/mindmap-manual",
+    gradient: "from-indigo-500 to-blue-500",
   },
   {
     title: "Chat with PDF",
     description: "Ask questions and get answers from your study materials",
     icon: MessageSquare,
-    href: "http://localhost:8080",
+    href: "/pdf-chat",
     gradient: "from-blue-500 to-cyan-500",
   },
   {
     title: "FlashCard",
     description: "Create and review flashcards for effective learning",
     icon: BookOpen,
-    href: "http://localhost:5175",
+    href: "/flashcard",
     gradient: "from-emerald-500 to-teal-500",
-  },
-  {
-    title: "Quiz",
-    description: "Test your knowledge with interactive quizzes",
-    icon: GraduationCap,
-    href: "/quiz",
-    gradient: "from-orange-500 to-red-500",
   },
 ];
 
 const Index = () => {
-  console.log("Rendering Index page");
-  
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-white relative overflow-hidden">
       {/* Floating shapes background */}
@@ -51,61 +49,48 @@ const Index = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600 tracking-tight">
-            Your Interactive Learning Platform
+          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+            Welcome to Jenome
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Enhance your learning experience with our suite of interactive study tools
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Your all-in-one platform for interactive learning and study tools
           </p>
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {features.map((feature, index) => (
-            <motion.a
+            <motion.div
               key={feature.title}
-              href={feature.href}
-              className="block group"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
             >
-              <Card className={cn(
-                "relative h-full overflow-hidden transition-all duration-300",
-                "hover:shadow-xl hover:-translate-y-1",
-                "border border-gray-100 backdrop-blur-sm bg-white/50",
-                "hover:border-gray-200 rounded-xl"
-              )}>
-                <CardContent className="p-6">
-                  <motion.div 
-                    className={cn(
-                      "w-16 h-16 rounded-xl mb-6 flex items-center justify-center",
-                      "bg-gradient-to-br shadow-lg",
-                      feature.gradient
-                    )}
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <feature.icon className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-3 tracking-tight group-hover:text-indigo-600 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </CardContent>
-                <div className={cn(
-                  "absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300",
-                  "bg-gradient-to-br",
-                  feature.gradient
-                )} />
-              </Card>
-            </motion.a>
+              <a href={feature.href} className="block h-full">
+                <Card className={cn(
+                  "group hover:shadow-lg transition-all duration-300 h-full overflow-hidden relative",
+                  "hover:-translate-y-1"
+                )}>
+                  <CardContent className="p-6">
+                    <div className={cn(
+                      "w-12 h-12 rounded-lg flex items-center justify-center mb-4",
+                      `bg-gradient-to-br ${feature.gradient}`
+                    )}>
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </a>
+            </motion.div>
           ))}
         </div>
       </main>
