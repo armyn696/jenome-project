@@ -12,50 +12,75 @@ function App() {
   const [isInputExpanded, setIsInputExpanded] = useState(false);
 
   const cleanAndParseJSON = (text) => {
-    // Try to find JSON content between backticks or standalone
-    const jsonMatch = text.match(/```json\s*({[\s\S]*?})\s*```/) || text.match(/^[\s\n]*({[\s\S]*})[\s\n]*$/);
-    
-    if (jsonMatch) {
-      const jsonStr = jsonMatch[1];
-      try {
-        const parsed = JSON.parse(jsonStr);
-        
-        // Validate the structure
-        if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
-          throw new Error('Invalid mindmap structure: missing nodes or edges arrays');
-        }
+    console.log('Raw AI Response:', text); // Log raw response
 
-        // Generate missing edges if needed
-        if (parsed.edges.length === 0) {
-          const newEdges = [];
-          parsed.nodes.forEach((node, index) => {
-            if (index > 0) {
-              newEdges.push({
-                id: `e1-${node.id}`,
-                source: "1",
-                target: node.id
-              });
-            }
-          });
-          parsed.edges = newEdges;
-        }
-
-        return parsed;
-      } catch (e) {
-        console.error('JSON parse error:', e);
-        throw new Error('Invalid JSON structure');
-      }
+    // Remove any text before the first {
+    const jsonStart = text.indexOf('{');
+    if (jsonStart === -1) {
+      console.error('No JSON object found in response');
+      throw new Error('Invalid response format');
     }
-    throw new Error('No valid JSON found in response');
+    
+    const jsonEnd = text.lastIndexOf('}');
+    if (jsonEnd === -1) {
+      console.error('Incomplete JSON in response');
+      throw new Error('Invalid response format');
+    }
+    
+    const jsonStr = text.substring(jsonStart, jsonEnd + 1);
+    console.log('Extracted JSON:', jsonStr); // Log extracted JSON
+
+    try {
+      const parsed = JSON.parse(jsonStr);
+      console.log('Parsed JSON:', parsed); // Log parsed JSON
+      
+      // Validate the structure
+      if (!Array.isArray(parsed.nodes) || !parsed.nodes.length) {
+        throw new Error('Invalid mindmap structure: missing or empty nodes array');
+      }
+
+      // Ensure edges array exists
+      if (!Array.isArray(parsed.edges)) {
+        parsed.edges = [];
+      }
+
+      // Generate missing edges if needed
+      if (parsed.edges.length === 0) {
+        const newEdges = [];
+        parsed.nodes.forEach((node, index) => {
+          if (index > 0) {
+            newEdges.push({
+              id: `e1-${node.id}`,
+              source: "1",
+              target: node.id
+            });
+          }
+        });
+        parsed.edges = newEdges;
+      }
+
+      return parsed;
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      throw new Error('Failed to parse mindmap structure');
+    }
   };
 
   const generateMindMap = async (text) => {
-    const prompt = `Create a mindmap from the following text. Return ONLY a JSON object with two arrays: 'nodes' and 'edges'.
-    Each node should have: id (string), label (string), and type (either 'input' for center or 'default' for others).
-    Each edge should have: id (string), source (node id), target (node id).
-    The first node (id: '1') should be the main topic.
-    Keep the response focused and concise.
-    Text: ${text}`;
+    const prompt = `Generate a mindmap structure for the following text. Return ONLY a JSON object in this exact format:
+{
+  "nodes": [
+    {"id": "1", "label": "Main Topic", "type": "input"},
+    {"id": "2", "label": "Subtopic 1", "type": "default"},
+    ...
+  ],
+  "edges": [
+    {"id": "e1-2", "source": "1", "target": "2"},
+    ...
+  ]
+}
+Do not include any other text, markdown formatting, or explanations. The response should be a valid JSON object only.
+Text: ${text}`;
 
     const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
@@ -81,6 +106,11 @@ function App() {
   };
 
   const handleGenerate = async () => {
+    if (!inputText.trim()) {
+      setError('لطفاً متنی وارد کنید');
+      return;
+    }
+
     try {
       setError('');
       const data = await generateMindMap(inputText);
@@ -111,7 +141,11 @@ function App() {
               placeholder="متن خود را وارد کنید..."
               className="input-text"
             />
-            <button onClick={handleGenerate} className="generate-button">
+            <button 
+              onClick={handleGenerate} 
+              className="generate-button"
+              disabled={!inputText.trim()}
+            >
               ایجاد نقشه ذهنی
             </button>
             {error && <div className="error-message">{error}</div>}
