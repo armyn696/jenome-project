@@ -1,4 +1,5 @@
-/flashcard    /flashcard/index.html    200
-/mindmap/mindmap-ai    /mindmap/mindmap-ai/index.html    200
-/mindmap/mindmap-manual    /mindmap/mindmap-manual/index.html    200
-/pdf-chat    /pdf-chat/index.html    200
+/flashcard/*    /flashcard/index.html    200
+/mindmap/mindmap-ai/*    /mindmap/mindmap-ai/index.html    200
+/mindmap/mindmap-manual/*    /mindmap/mindmap-manual/index.html    200
+/pdf-chat/*    /pdf-chat/index.html    200
+/*    /index.html    200
