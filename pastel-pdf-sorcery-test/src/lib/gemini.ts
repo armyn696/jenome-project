@@ -1,9 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+if (!import.meta.env.VITE_GEMINI_API_KEY) {
+  throw new Error('VITE_GEMINI_API_KEY is not set');
+}
+
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 export const geminiModel = genAI.getGenerativeModel({
-  model: 'gemini-2.0-flash-exp',  // Back to the new model
+  model: 'gemini-2.0-flash-exp',
   generationConfig: {
     temperature: 0.7,
     topP: 0.8,

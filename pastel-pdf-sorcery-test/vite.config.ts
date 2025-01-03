@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   base: '/pdf-chat/',
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    sourcemap: false
   },
   server: {
     host: "::",
