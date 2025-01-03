@@ -9,11 +9,14 @@ export default defineConfig({
   root: '.',
   build: {
     outDir: 'dist',
-    sourcemap: false
-  },
-  server: {
-    host: "::",
-    port: 8080,
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          pdf: ['pdfjs-dist']
+        }
+      }
+    }
   },
   resolve: {
     alias: {
