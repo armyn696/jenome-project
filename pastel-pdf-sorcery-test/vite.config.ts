@@ -4,11 +4,15 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [react()],
+  base: '/pdf-chat/',
+  build: {
+    outDir: 'dist'
+  },
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
