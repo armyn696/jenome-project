@@ -4,12 +4,19 @@ import google.generativeai as genai
 import re
 import math
 import json
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
-# تنظیم Gemini API
-GEMINI_API_KEY = "AIzaSyCFhGbQNX5BNAph9qcQk2uktm_Q2nLM0_I"  # جایگذاری با کلید API خود
+# Load environment variables
+load_dotenv()
+
+# Configure Gemini API
+GEMINI_API_KEY = os.getenv('VITE_GEMINI_API_KEY')
+if not GEMINI_API_KEY:
+    raise ValueError("VITE_GEMINI_API_KEY is not set in environment variables")
 genai.configure(api_key=GEMINI_API_KEY)
 
 def clean_mermaid_code(response_text):
@@ -271,4 +278,4 @@ def generate():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='169.254.107.67', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
