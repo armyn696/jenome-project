@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/mindmap/mindmap-manual/',
   build: {
-    outDir: 'dist',
+    outDir: 'dist'
   },
   resolve: {
     alias: {

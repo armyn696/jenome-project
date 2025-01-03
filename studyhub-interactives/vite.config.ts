@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: 'public'
+    outDir: 'dist'
   },
   server: {
     host: "::",

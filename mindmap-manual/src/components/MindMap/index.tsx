@@ -1,5 +1,5 @@
 import { MindMapFlow } from './components/MindMapFlow';
-import 'reactflow/dist/style.css';
+import '@xyflow/react/dist/style.css';
 
 const MindMap = () => {
   return <MindMapFlow />;

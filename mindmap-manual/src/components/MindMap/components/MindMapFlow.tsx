@@ -8,12 +8,12 @@ import {
   Connection,
   useReactFlow,
   useKeyPress,
-  MarkerType,
-  addEdge
-} from 'reactflow';
+  MarkerType
+} from '@xyflow/react';
 import CenterNode from '../CenterNode';
 import BranchNode from '../BranchNode';
 import { useMindMapNodes } from '../hooks/useMindMapNodes';
+import { addEdge } from '@xyflow/react';
 import { CustomNode } from '../types';
 import { Trash2, Undo2, Redo2 } from 'lucide-react';
 import { useMemo, useCallback, useEffect, useState } from 'react';
