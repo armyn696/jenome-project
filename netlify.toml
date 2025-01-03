@@ -1,13 +1,28 @@
 [build]
-  command = "bash build.sh"
+  command = "chmod +x build.sh && ./build.sh"
   publish = "public"
 
-[functions]
-  directory = "mindmap-ai"
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/flashcard/*"
+  to = "/flashcard/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mindmap/mindmap-ai/*"
+  to = "/mindmap/mindmap-ai/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/mindmap/mindmap-manual/*"
+  to = "/mindmap/mindmap-manual/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-chat/*"
+  to = "/pdf-chat/index.html"
   status = 200
 
 [[redirects]]

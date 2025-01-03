@@ -6,6 +6,7 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   base: '/pdf-chat/',
+  root: '.',
   build: {
     outDir: 'dist',
     sourcemap: false
