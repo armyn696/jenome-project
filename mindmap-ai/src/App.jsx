@@ -11,11 +11,50 @@ function App() {
   const [error, setError] = useState('');
   const [isInputExpanded, setIsInputExpanded] = useState(false);
 
+  const cleanAndParseJSON = (text) => {
+    // Try to find JSON content between backticks or standalone
+    const jsonMatch = text.match(/```json\s*({[\s\S]*?})\s*```/) || text.match(/^[\s\n]*({[\s\S]*})[\s\n]*$/);
+    
+    if (jsonMatch) {
+      const jsonStr = jsonMatch[1];
+      try {
+        const parsed = JSON.parse(jsonStr);
+        
+        // Validate the structure
+        if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
+          throw new Error('Invalid mindmap structure: missing nodes or edges arrays');
+        }
+
+        // Generate missing edges if needed
+        if (parsed.edges.length === 0) {
+          const newEdges = [];
+          parsed.nodes.forEach((node, index) => {
+            if (index > 0) {
+              newEdges.push({
+                id: `e1-${node.id}`,
+                source: "1",
+                target: node.id
+              });
+            }
+          });
+          parsed.edges = newEdges;
+        }
+
+        return parsed;
+      } catch (e) {
+        console.error('JSON parse error:', e);
+        throw new Error('Invalid JSON structure');
+      }
+    }
+    throw new Error('No valid JSON found in response');
+  };
+
   const generateMindMap = async (text) => {
-    const prompt = `Create a mindmap from the following text. Format the output as a JSON object with two arrays: 'nodes' and 'edges'.
+    const prompt = `Create a mindmap from the following text. Return ONLY a JSON object with two arrays: 'nodes' and 'edges'.
     Each node should have: id (string), label (string), and type (either 'input' for center or 'default' for others).
     Each edge should have: id (string), source (node id), target (node id).
     The first node (id: '1') should be the main topic.
+    Keep the response focused and concise.
     Text: ${text}`;
 
     const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -29,25 +68,24 @@ function App() {
       }
     });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const responseText = response.text();
-    
     try {
-      const data = JSON.parse(responseText);
-      return data;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const responseText = response.text();
+      
+      return cleanAndParseJSON(responseText);
     } catch (error) {
-      console.error('Failed to parse AI response:', responseText);
-      throw new Error('Failed to generate mindmap structure');
+      console.error('AI generation error:', error);
+      throw new Error('Failed to generate mindmap');
     }
   };
 
   const handleGenerate = async () => {
     try {
+      setError('');
       const data = await generateMindMap(inputText);
       setNodes(data.nodes);
       setEdges(data.edges);
-      setError('');
       setIsInputExpanded(false);
     } catch (error) {
       console.error('Error:', error);
