@@ -12,7 +12,7 @@ function App() {
 
   const handleGenerate = async () => {
     try {
-      const response = await fetch('http://169.254.107.67:5000/api/generate', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,8 +26,8 @@ function App() {
         throw new Error(data.error || 'Network response was not ok');
       }
       
-      setNodes(data.nodes);
-      setEdges(data.edges);
+      setNodes(data.flow_data.nodes);
+      setEdges(data.flow_data.edges);
       setError('');
       setIsInputExpanded(false);
     } catch (error) {
