@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position } from 'reactflow';
 import { PlusCircle } from 'lucide-react';
 import { CenterNodeData } from './types';
 

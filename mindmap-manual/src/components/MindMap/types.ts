@@ -1,4 +1,4 @@
-import { Node } from '@xyflow/react';
+import { Node } from 'reactflow';
 
 export interface NodeData extends Record<string, unknown> {
   id: string;
@@ -19,4 +19,3 @@ export interface CenterNodeData extends NodeData {
 
 export type CustomNode = Node<NodeData>;
 export type BranchNode = Node<BranchNodeData>;
-export type CenterNode = Node<CenterNodeData>;
